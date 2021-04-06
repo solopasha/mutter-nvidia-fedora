@@ -10,7 +10,7 @@
 
 Name:          mutter
 Version:       40.0
-Release:       2%{?dist}
+Release:       4%{?dist}
 Summary:       Window and compositing manager based on Clutter
 
 License:       GPLv2+
@@ -26,7 +26,14 @@ Patch1:        0001-Revert-build-Do-not-provide-built-sources-as-libmutt.patch
 # Workaround for RHBZ#1936991 (blocks atomic KMS on "tegra" driver)
 Patch2:        0001-Test-deny-atomic-KMS-for-tegra-RHBZ-1936991.patch
 
-Patch3:        night-light.patch
+# Fix crash on resume (rhbz#1941971)
+Patch3:        egl-surface-fixes.patch
+
+# https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/1802
+# Fix enter, space, backspace keys not working with input methods
+Patch4:        1802.patch
+
+Patch5:        night-light.patch
 
 BuildRequires: chrpath
 BuildRequires: pango-devel
@@ -84,13 +91,6 @@ BuildRequires: json-glib-devel >= %{json_glib_version}
 BuildRequires: libgudev1-devel
 BuildRequires: libinput-devel >= %{libinput_version}
 BuildRequires: pkgconfig(xwayland)
-
-Obsoletes: mutter-wayland < 3.13.0
-Obsoletes: mutter-wayland-devel < 3.13.0
-
-# Make sure yum updates gnome-shell as well; otherwise we might end up with
-# broken gnome-shell installations due to mutter ABI changes.
-Conflicts: gnome-shell < 3.21.1
 
 Requires: control-center-filesystem
 Requires: gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
@@ -177,6 +177,13 @@ desktop-file-validate %{buildroot}/%{_datadir}/applications/%{name}.desktop
 %{_datadir}/mutter-%{mutter_api_version}/tests
 
 %changelog
+* Tue Mar 30 2021 Kalev Lember <klember@redhat.com> - 40.0-4
+- Fix enter, space, backspace keys not working with input methods (#1942294)
+- Drop old obsoletes and conflicts
+
+* Mon Mar 29 2021 Jonas Ådahl <jadahl@redhat.com> - 40.0-3
+- Fix crash on resume (rhbz#1941971)
+
 * Fri Mar 26 2021 Kalev Lember <klember@redhat.com> - 40.0-2
 - Rebuild to fix sysprof-capture symbols leaking into libraries consuming it
 
